@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/JoanMz/carroscaros/issues"
   },
-  "homepage": "https://github.com/JoanMz/carroscaros#readme"
+  "homepage": "https://github.com/JoanMz/carroscaros#readme",
+  "dependencies": {
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.0"
+  }
 }
