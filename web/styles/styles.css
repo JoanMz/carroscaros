@@ -1,0 +1,190 @@
+/* Estilos generales */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas pequeñas */
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+/* Estilos para los filtros */
+#filters {
+    flex: 1; /* Ocupa 1 parte del espacio */
+    min-width: 250px; /* Ancho mínimo para los filtros */
+    margin-right: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px; /* Espacio inferior en pantallas pequeñas */
+}
+
+#filters h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.filter-group input[type="text"],
+.filter-group input[type="number"] {
+    width: 95%; /* Ajusta el ancho para que quepa el padding */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* Estilos específicos para rangos */
+.price-range, .millage-range {
+    display: flex;
+    flex-direction: column; /* Apila los elementos verticalmente */
+}
+
+.price-range input, .millage-range input {
+    margin-bottom: 5px; /* Espacio entre inputs de rango */
+}
+
+.price-range span, .millage-range span {
+   display: none; /* Oculta el guion por defecto */
+}
+
+
+#filter-form button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#filter-form button[type="submit"] {
+    background-color: #5cb85c;
+    color: white;
+}
+
+#filter-form button[type="button"] {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+/* Estilos para la lista de carros */
+#car-list {
+    flex: 3; /* Ocupa 3 partes del espacio */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#car-list h2 {
+     margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+#cars-container {
+    display: grid; /* Usa CSS Grid para las tarjetas de carros */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Columnas responsivas */
+    gap: 20px; /* Espacio entre tarjetas */
+}
+
+.car-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.car-card:hover {
+    transform: translateY(-5px); /* Efecto al pasar el ratón */
+}
+
+.car-card h3 {
+    margin-top: 0;
+    color: #337ab7; /* Un color azul para el título */
+}
+
+.car-card p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.car-card .price {
+    font-weight: bold;
+    color: #4CAF50; /* Verde para el precio */
+    font-size: 1.1em;
+    margin-top: 10px;
+}
+
+#loading-message, #no-results-message {
+    text-align: center;
+    font-style: italic;
+    color: #777;
+    width: 100%; /* Para que ocupe todo el ancho del grid si no hay resultados */
+    grid-column: 1 / -1; /* Asegura que ocupe todas las columnas del grid */
+}
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #ddd;
+    color: #333;
+    font-size: 0.9em;
+}
+
+/* Media Query para pantallas más pequeñas (ej. móviles) */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Apila filtros y lista de carros */
+    }
+    #filters {
+        margin-right: 0; /* Quita el margen derecho */
+        margin-bottom: 20px; /* Añade espacio debajo */
+        min-width: auto; /* Permite que se ajuste al ancho */
+    }
+     .price-range input, .millage-range input {
+        width: 45%; /* Ajusta ancho para que quepan en una línea */
+        display: inline-block; /* Permite ponerlos en línea */
+         margin-bottom: 0; /* Quita el margen inferior */
+    }
+     .price-range span, .millage-range span {
+         display: inline-block; /* Muestra el guion */
+         margin: 0 5px;
+     }
+    .price-range, .millage-range {
+        display: block; /* Vuelve al comportamiento de bloque normal */
+    }
+
+}

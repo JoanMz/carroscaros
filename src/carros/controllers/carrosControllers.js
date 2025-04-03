@@ -1,4 +1,4 @@
-const { Router } = require('express');
+const { Router, application } = require('express');
 const router = Router();
 const carrosModels = require('../models/carrosModels');
 
@@ -52,7 +52,8 @@ router.get('/carros/buscar', async (req, res) => {
             millageMax: req.query.millageMax,
         };
 
-        const cars = await CarModel.getCarsByFilters(filters);
+
+        const cars = await carrosModels.filterByFeatures(filters);
         res.json(cars);
     } catch (error) {
         console.error("Error al buscar vehículos:", error);
@@ -60,6 +61,10 @@ router.get('/carros/buscar', async (req, res) => {
     }
 });
 
+router.get("/carros/mostrar", async(req, res) =>{
+    const cars = await carrosModels.getCars();
+    res.json(cars);
+});
 
 
 module.exports = router;

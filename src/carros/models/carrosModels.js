@@ -45,10 +45,9 @@ async function editCarSaleStatus(car_id, status){
 }
 
 //router.get("/buscar", async (req, res) =>
-async function filterByFeatures(req, res) {
+async function filterByFeatures(filters) {
     try {
-        const { make, model, anio, priceMin, priceMax, millageMin, millageMax } = req.query;
-
+        const { make, model, anio, priceMin, priceMax, millageMin, millageMax } = filters;
         let sql = "SELECT * FROM carroscaros.carros WHERE 1=1";
         let values = [];
 
@@ -84,13 +83,19 @@ async function filterByFeatures(req, res) {
         sql += " AND salestatus = 'disponible'";
 
         const [rows] = await connection.query(sql, values);
-        res.json(rows);
+        return rows;
     } catch (error) {
         console.error("Error al buscar vehículos:", error);
         res.status(500).json({ error: "Error en el servidor" });
     }
 }
 
+async function getCars() {
+    sql = "SELECT * FROM carroscaros.carros ORDER BY Year DESC;"
+    const [rows] = await connection.query(sql);
+    return rows;
+}
+
 module.exports = {
-    registCar, editCarSaleStatus, filterByFeatures
+    registCar, editCarSaleStatus, filterByFeatures, getCars
 };
