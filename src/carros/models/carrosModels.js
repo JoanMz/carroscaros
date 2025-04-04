@@ -86,7 +86,7 @@ async function filterByFeatures(filters) {
         return rows;
     } catch (error) {
         console.error("Error al buscar vehículos:", error);
-        res.status(500).json({ error: "Error en el servidor" });
+        throw error;
     }
 }
 

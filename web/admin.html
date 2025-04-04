@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel Administrador</title>
+  <link rel="stylesheet" href="./styles/styles.css">
+</head>
+<body>
+  <header>
+      <h1>Panel Administrador - Editar Vehículos</h1>
+  </header>
+  <main class="container">
+      <section id="admin-car-list">
+          <h2>Lista de Vehículos</h2>
+          <div id="admin-cars-container"></div>
+      </section>
+  </main>
+  <script>
+    async function fetchCars() {
+        try {
+            const response = await fetch('http://192.168.100.2:3003/carros/mostrar');
+            const cars = await response.json();
+            displayAdminCars(cars);
+        } catch (error) {
+            console.error("Error al cargar vehículos:", error);
+        }
+    }
+
+    function displayAdminCars(cars) {
+        const container = document.getElementById('admin-cars-container');
+        container.innerHTML = '';
+        cars.forEach(car => {
+            const card = document.createElement('div');
+            card.classList.add('car-card');
+            card.innerHTML = `
+                <h3>${car.Make} ${car.Model} (${car.Year})</h3>
+                <p>Estado: <span id="status-${car.id}">${car.salestatus || 'disponible'}</span></p>
+                <button onclick="updateStatus(${car.id}, 'disponible')">Marcar como disponible</button>
+                <button onclick="updateStatus(${car.id}, 'no_disponible')">Marcar como no disponible</button>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    async function updateStatus(carId, newStatus) {
+        try {
+            const response = await fetch('http://192.168.100.2:3003/carros/change_state', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ car_id: carId, status: newStatus })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error);
+            }
+            document.getElementById(`status-${carId}`).textContent = newStatus;
+            alert("Estado actualizado");
+        } catch (error) {
+            console.error(error);
+            alert("Error al actualizar el estado");
+        }
+    }
+
+    // Al cargar la página, verifica que el usuario sea admin
+    (function checkAdmin() {
+        const user = localStorage.getItem('user');
+        if (!user || JSON.parse(user).role !== 'admin') {
+            alert("Acceso denegado. Debes ser administrador.");
+            window.location.href = './index.html';
+        }
+    })();
+
+    fetchCars();
+  </script>
+</body>
+</html>

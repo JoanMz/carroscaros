@@ -50,31 +50,107 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Función para renderizar los carros en el HTML ---
     const displayCars = (cars) => {
-        carsContainer.innerHTML = ''; // Limpia cualquier mensaje previo (como "cargando" o "sin resultados")
+        carsContainer.innerHTML = ''; // Limpia mensajes previos
         cars.forEach(car => {
             const carCard = document.createElement('div');
             carCard.classList.add('car-card');
             const formattedPrice = car.Price ? `$${car.Price.toLocaleString()}` : 'Consultar';
             const formattedMileage = car.Mileage ? `${car.Mileage.toLocaleString()} km` : 'N/A';
-            // Asegúrate de que los nombres de las propiedades coincidan con los de tu API/Base de Datos
             carCard.innerHTML = `
-            <h3>${car.Make || 'Marca no disponible'} ${car.Model || 'Modelo no disponible'} (${car.Year || 'Año no disponible'})</h3>
-            <p><strong>Color:</strong> ${car.Color || 'N/A'}</p>
-            <p><strong>Kilometraje:</strong> ${formattedMileage}</p>
-            <p><strong>Tipo:</strong> ${car['Body Type'] || 'N/A'}</p> 
-            <p><strong>Cilindros:</strong> ${car.Cylinders || 'N/A'}</p> 
-            <p><strong>Transmisión:</strong> ${car.Transmission || 'N/A'}</p> 
-            <p><strong>Combustible:</strong> ${car['Fuel Type'] || 'N/A'}</p> 
-            <p><strong>Descripción:</strong> ${car.Description || 'Sin descripción.'}</p> 
-            <p class="price">Precio: ${formattedPrice}</p> 
-            <p><strong>Estado:</strong> ${car.salestatus || 'disponible'}</p> 
-        `;
-            // Nota: Tu endpoint /buscar no parece devolver el 'status'. Si quieres mostrarlo,
-            // necesitarás incluirlo en la respuesta de ese endpoint. Por ahora, asumo 'disponible'.
-
+                <h3>${car.Make || 'Marca no disponible'} ${car.Model || 'Modelo no disponible'} (${car.Year || 'Año no disponible'})</h3>
+                <p><strong>Color:</strong> ${car.Color || 'N/A'}</p>
+                <p><strong>Kilometraje:</strong> ${formattedMileage}</p>
+                <p><strong>Tipo:</strong> ${car['Body Type'] || 'N/A'}</p>
+                <p><strong>Cilindros:</strong> ${car.Cylinders || 'N/A'}</p>
+                <p><strong>Transmisión:</strong> ${car.Transmission || 'N/A'}</p>
+                <p><strong>Combustible:</strong> ${car['Fuel Type'] || 'N/A'}</p>
+                <p><strong>Descripción:</strong> ${car.Description || 'Sin descripción.'}</p>
+                <p class="price">Precio: ${formattedPrice}</p>
+                <div class="card-actions">
+                    <button class="buy-btn" data-id="${car.id}">Comprar</button>
+                    <button class="visit-btn" data-id="${car.id}">Agendar Visita</button>
+                </div>
+            `;
             carsContainer.appendChild(carCard);
         });
+        // Asignar eventos a los botones recién creados
+        document.querySelectorAll('.buy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const carId = e.target.getAttribute('data-id');
+                buyCar(carId);
+            });
+        });
+        document.querySelectorAll('.visit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const carId = e.target.getAttribute('data-id');
+                scheduleVisit(carId);
+            });
+        });
     };
+
+    async function buyCar(carId) {
+        // Verifica si hay usuario autenticado (por ejemplo, almacenado en localStorage)
+        const user = localStorage.getItem('user');
+        if (!user) {
+            alert("Debes iniciar sesión para comprar un vehículo.");
+            window.location.href = './login.html';
+            return;
+        }
+        // En un flujo real probablemente solicites el método de pago y total
+        const metodoPago = prompt("Ingresa método de pago:");
+        const total = prompt("Ingresa el total a pagar:");
+        const usuarioEmail = JSON.parse(user).email;
+        try {
+            const response = await fetch('http://192.168.100.2:3002/comprasyvistas/venta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    usuarioEmail,
+                    vehiculoId: carId,
+                    metodoPago,
+                    total
+                })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error);
+            }
+            alert("¡Compra realizada con éxito!");
+        } catch (error) {
+            console.error(error);
+            alert("Ocurrió un error al procesar la compra.");
+        }
+    }
+
+    async function scheduleVisit(carId) {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            alert("Debes iniciar sesión para agendar una visita.");
+            window.location.href = './login.html';
+            return;
+        }
+        const fecha = prompt("Ingresa la fecha y hora para la visita (YYYY-MM-DD HH:mm):");
+        const usuarioEmail = JSON.parse(user).email;
+        try {
+            const response = await fetch('http://192.168.100.2:3002/comprasyvistas/visita', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    usuarioEmail,
+                    vehiculoId: carId,
+                    fecha
+                })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error);
+            }
+            alert("¡Visita agendada con éxito!");
+        } catch (error) {
+            console.error(error);
+            alert("Ocurrió un error al agendar la visita.");
+        }
+    }
 
     // --- Función para mostrar mensaje de "No se encontraron resultados" ---
     const displayNoResults = () => {
@@ -105,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filterForm.reset(); // Resetea los campos del formulario
         fetchAndDisplayCars(); // Vuelve a cargar todos los carros sin filtros
     });
-
 
     // --- Carga inicial de todos los carros al cargar la página ---
     fetchAndDisplayCars();
