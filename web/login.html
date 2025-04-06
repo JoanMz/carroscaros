@@ -40,6 +40,7 @@
             }
             const data = await response.json();
             // Guarda el usuario autenticado (aquí se simula con un objeto que incluye email)
+            console.log(data.user)
             localStorage.setItem('user', JSON.stringify({ email, role: data.user.role || 'usuario' }));
             alert("Autenticación exitosa");
             window.location.href = './index.html';

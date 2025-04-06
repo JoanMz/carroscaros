@@ -47,7 +47,7 @@ async function editCarSaleStatus(car_id, status){
 //router.get("/buscar", async (req, res) =>
 async function filterByFeatures(filters) {
     try {
-        const { make, model, anio, priceMin, priceMax, millageMin, millageMax } = filters;
+        const { make, model, year, priceMin, priceMax, millageMin, millageMax } = filters;
         let sql = "SELECT * FROM carroscaros.carros WHERE 1=1";
         let values = [];
 
@@ -59,9 +59,9 @@ async function filterByFeatures(filters) {
             sql += " AND Model = ?";
             values.push(model);
         }
-        if (anio) {
+        if (year) {
             sql += " AND Year = ?";
-            values.push(anio);
+            values.push(year);
         }
         if (priceMin) {
             sql += " AND Price >= ?";

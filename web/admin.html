@@ -65,7 +65,7 @@
     // Al cargar la página, verifica que el usuario sea admin
     (function checkAdmin() {
         const user = localStorage.getItem('user');
-        if (!user || JSON.parse(user).role !== 'admin') {
+        if (!user || JSON.parse(user).role !== 'adm') {
             alert("Acceso denegado. Debes ser administrador.");
             window.location.href = './index.html';
         }
