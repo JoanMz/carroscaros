@@ -17,6 +17,10 @@ const connection = mysql.createPool({
 //rmake, rmodel, ryear, rprice, rmillage, rbodyt, rcilinders, rtransmission, rfuelt, rcolor, rdesc
 
 async function registCar(make, model, year, price, millage, bodyt, cilinders, transmission, fuelt, color, desc){
+    // Que todos los campos sean obligatorios
+    if (!make || !model || !year || !price || !millage || !bodyt || !cilinders || !transmission || !fuelt || !color || !desc) {
+        throw new Error("Todos los campos son obligatorios");
+    }
     try {
         const sql = "INSERT INTO carros (`Make`, `Model`, `Year`, `Price`, `Mileage`, `Body Type`, `Cylinders`, `Transmission`, `Fuel Type`, `Color`, `Description`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         const [result] = await connection.query(sql, [make, model, year, price, millage, bodyt, cilinders, transmission, fuelt, color, desc]);

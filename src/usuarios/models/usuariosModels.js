@@ -19,6 +19,24 @@ const connection = mysql.createPool({
 //async function traerUsuarios
 
 async function createUser(name, email, date_birth, password){
+    // Validar que email sea un email válido
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)){
+        throw new Error("El email no es válido");
+    }
+    // Validar que la fecha de nacimiento sea una fecha válida
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(date_birth)){
+        throw new Error("La fecha de nacimiento no es válida");
+    }
+    // Validar que la contraseña tenga al menos 8 caracteres
+    if (password.length < 8){
+        throw new Error("La contraseña debe tener al menos 8 caracteres");
+    }
+    // Validar que el nombre no esté vacío
+    if (name.length === 0){
+        throw new Error("El nombre no puede estar vacío");
+    }
     console.log(name, email, date_birth, password)
     const result = await connection.query('INSERT INTO carroscaros.users(name, email, date_birth, password) VALUES(?,?,?,?)', [name, email, date_birth, password]);
     return result;

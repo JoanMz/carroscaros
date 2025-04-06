@@ -15,6 +15,8 @@ const connection = mysql.createPool({
 async function registrarVenta(usuarioId, vehiculoId, metodoPago, total) {
     try {
         const sql = "INSERT INTO ventas (usuario_id, vehiculo_id, metodo_pago, total) VALUES (?, ?, ?, ?)";
+        // saber si el usuario existe y el vehiculo existe y que el estado de vehiculo sea "disponible"        
+        await connection.query(sql, [usuarioId, vehiculoId, metodoPago, total]);
         const [result] = await connection.query(sql, [usuarioId, vehiculoId, metodoPago, total]);
         const nuevaVenta = {
             id: result.insertId,
@@ -51,7 +53,12 @@ async function obtenerVentasPorUsuario(usuarioId) {
     }
 }
 
+
+//SEPARARLO EN OTRO MICROSERVICIO
 async function programarVisita(usuarioId, vehiculoId, fecha) {
+    // Validar que la fecha sea real
+    // vehiculoId debe existir y el estado del vehiculo debe ser "disponible"
+    // usuarioId debe existir
     try {
         const sql = "INSERT INTO visitas (usuario_id, vehiculo_id, fecha_hora) VALUES (?, ?, ?)";
         const [result] = await connection.query(sql, [usuarioId, vehiculoId, fecha]);
