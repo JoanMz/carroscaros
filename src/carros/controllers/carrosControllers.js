@@ -29,7 +29,7 @@ router.put('/carros/change_state', async(req, res) => {
         if (!car_id || !status){
             res.status(400).json({error: "Falta algun campo obligatorio"});
         }
-        if(!status.includes("disponible", "no_disponible")){
+        if (!["disponible", "no_disponible"].includes(status)){
             res.status(400).json({error: "Status incorrecto"})
         }
         const result = await carrosModels.editCarSaleStatus(car_id, status);
