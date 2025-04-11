@@ -114,11 +114,33 @@ async function obtenerVisitasPorUsuario(usuarioId) {
     }
 }
 
+async function solicitarCredito(usuarioId, vehiculoId) {
+    try {
+        // Simular respuesta de entidad financiera
+        const estado = Math.random() < 0.5 ? 'aprobado' : 'rechazado';
+
+        const sql = "INSERT INTO solicitudes_credito (usuario_id, vehiculo_id, estado) VALUES (?, ?, ?)";
+        const [result] = await connection.query(sql, [usuarioId, vehiculoId, estado]);
+
+        return {
+            id: result.insertId,
+            usuarioId,
+            vehiculoId,
+            estado,
+            fecha: new Date()
+        };
+    } catch (error) {
+        console.error("Error al solicitar crédito:", error);
+        throw error;
+    }
+}
+
 module.exports = {
     registrarVenta,
     obtenerVentas,
     obtenerVentasPorUsuario,
     programarVisita,
     obtenerVisitas,
-    obtenerVisitasPorUsuario
+    obtenerVisitasPorUsuario,
+    solicitarCredito 
 };

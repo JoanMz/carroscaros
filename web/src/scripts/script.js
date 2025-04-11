@@ -1,56 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_BASE_URL = 'http://192.168.100.2:3003'; // La URL base de tu API de carros
+    const API_BASE_URL = 'http://192.168.100.2:3003';
     const carsContainer = document.getElementById('cars-container');
     const filterForm = document.getElementById('filter-form');
     const loadingMessage = document.getElementById('loading-message');
     const clearFiltersButton = document.getElementById('clear-filters');
 
-    // --- Función para obtener y mostrar los carros ---
     const fetchAndDisplayCars = async (filters = {}) => {
-        // Muestra el mensaje de carga y limpia resultados anteriores
         loadingMessage.style.display = 'block';
-        carsContainer.innerHTML = ''; // Limpia contenedor antes de cargar nuevos resultados
-        carsContainer.appendChild(loadingMessage); // Vuelve a añadir el mensaje de carga temporalmente
+        carsContainer.innerHTML = '';
+        carsContainer.appendChild(loadingMessage);
 
-        // Construye la URL con los parámetros de filtro
         const queryParams = new URLSearchParams();
         for (const key in filters) {
-            if (filters[key]) { // Solo añade el parámetro si tiene valor
+            if (filters[key]) {
                 queryParams.append(key, filters[key]);
             }
         }
-        const url = `${API_BASE_URL}/carros/buscar?${queryParams.toString()}`;
 
-        console.log("Fetching URL:", url); // Para depuración
+        const url = `${API_BASE_URL}/carros/buscar?${queryParams.toString()}`;
+        console.log("Fetching URL:", url);
 
         try {
             const response = await fetch(url);
             if (!response.ok) {
-                // Si la respuesta no es exitosa (ej. error 500), lanza un error
                 throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
             }
             const cars = await response.json();
-
-            // Oculta el mensaje de carga
             loadingMessage.style.display = 'none';
 
-            // Muestra los carros o un mensaje si no hay resultados
             if (cars.length > 0) {
                 displayCars(cars);
             } else {
                 displayNoResults();
             }
         } catch (error) {
-            // Manejo de errores (problemas de red, error del servidor, etc.)
             console.error("Error al obtener los carros:", error);
-            loadingMessage.style.display = 'none'; // Oculta carga en caso de error
+            loadingMessage.style.display = 'none';
             carsContainer.innerHTML = '<p id="no-results-message">Error al cargar los vehículos. Por favor, inténtalo de nuevo más tarde.</p>';
         }
     };
 
-    // --- Función para renderizar los carros en el HTML ---
     const displayCars = (cars) => {
-        carsContainer.innerHTML = ''; // Limpia mensajes previos
+        carsContainer.innerHTML = '';
         cars.forEach(car => {
             const carCard = document.createElement('div');
             carCard.classList.add('car-card');
@@ -69,34 +60,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-actions">
                     <button class="buy-btn" data-id="${car.id}">Comprar</button>
                     <button class="visit-btn" data-id="${car.id}">Agendar Visita</button>
+                    <button class="credit-btn" data-id="${car.id}">Solicitar Crédito</button>
                 </div>
             `;
             carsContainer.appendChild(carCard);
         });
-        // Asignar eventos a los botones recién creados
+
+        // Eventos para botones
         document.querySelectorAll('.buy-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const carId = e.target.getAttribute('data-id');
                 buyCar(carId);
             });
         });
+
         document.querySelectorAll('.visit-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const carId = e.target.getAttribute('data-id');
                 scheduleVisit(carId);
             });
         });
+
+        document.querySelectorAll('.credit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const carId = e.target.getAttribute('data-id');
+                requestCredit(carId);
+            });
+        });
     };
 
     async function buyCar(carId) {
-        // Verifica si hay usuario autenticado (por ejemplo, almacenado en localStorage)
         const user = localStorage.getItem('user');
         if (!user) {
             alert("Debes iniciar sesión para comprar un vehículo.");
             window.location.href = './login.html';
             return;
         }
-        // En un flujo real probablemente solicites el método de pago y total
         const metodoPago = prompt("Ingresa método de pago:");
         const total = prompt("Ingresa el total a pagar:");
         const usuarioEmail = JSON.parse(user).email;
@@ -152,16 +151,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Función para mostrar mensaje de "No se encontraron resultados" ---
+    async function requestCredit(carId) {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            alert("Debes iniciar sesión para solicitar un crédito.");
+            window.location.href = './login.html';
+            return;
+        }
+        const usuarioEmail = JSON.parse(user).email;
+        try {
+            const response = await fetch('http://192.168.100.2:3002/comprasyvistas/solicitar-credito', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    usuarioEmail,
+                    vehiculoId: carId
+                })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error);
+            }
+            const result = await response.json();
+            alert(`Resultado de solicitud: ${result.resultado}`);
+        } catch (error) {
+            console.error(error);
+            alert("Error al solicitar el crédito.");
+        }
+    }
+
     const displayNoResults = () => {
         carsContainer.innerHTML = '<p id="no-results-message">No se encontraron vehículos que coincidan con los filtros aplicados.</p>';
     };
 
-    // --- Event Listener para el formulario de filtros ---
     filterForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Evita que el formulario recargue la página
-
-        // Recolecta los valores de los filtros
+        event.preventDefault();
         const filters = {
             make: document.getElementById('filter-make').value.trim(),
             model: document.getElementById('filter-model').value.trim(),
@@ -171,17 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
             millageMin: document.getElementById('filter-millageMin').value.trim(),
             millageMax: document.getElementById('filter-millageMax').value.trim(),
         };
-
-        // Llama a la función para obtener y mostrar carros con los filtros aplicados
         fetchAndDisplayCars(filters);
     });
 
-     // --- Event Listener para el botón de limpiar filtros ---
     clearFiltersButton.addEventListener('click', () => {
-        filterForm.reset(); // Resetea los campos del formulario
-        fetchAndDisplayCars(); // Vuelve a cargar todos los carros sin filtros
+        filterForm.reset();
+        fetchAndDisplayCars();
     });
 
-    // --- Carga inicial de todos los carros al cargar la página ---
     fetchAndDisplayCars();
 });

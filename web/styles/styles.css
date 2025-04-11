@@ -188,3 +188,37 @@ footer {
     }
 
 }
+
+.car-card .card-actions {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.car-card .card-actions button {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease;
+}
+
+.car-card .buy-btn {
+    background-color: #5cb85c; /* Verde */
+}
+
+.car-card .visit-btn {
+    background-color: #0275d8; /* Azul */
+}
+
+.car-card .credit-btn {
+    background-color: #f0ad4e; /* Naranja */
+}
+
+.car-card .card-actions button:hover {
+    opacity: 0.9;
+}
