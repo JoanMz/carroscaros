@@ -14,21 +14,40 @@ const connection = mysql.createPool({
 
 async function registrarVenta(usuarioId, vehiculoId, metodoPago, total) {
     try {
+        // Verificamos si el vehículo existe y está disponible
+        const [carros] = await connection.query("SELECT * FROM carros WHERE id = ?", [vehiculoId]);
+
+        if (carros.length === 0) {
+            throw new Error("El vehículo no existe");
+        }
+
+        const estado = carros[0].salestatus;
+        if (estado !== 'disponible') {
+            throw new Error("El vehículo no está disponible para la venta");
+        }
+
         const sql = "INSERT INTO ventas (usuario_id, vehiculo_id, metodo_pago, total) VALUES (?, ?, ?, ?)";
-        // saber si el usuario existe y el vehiculo existe y que el estado de vehiculo sea "disponible"        
-        await connection.query(sql, [usuarioId, vehiculoId, metodoPago, total]);
         const [result] = await connection.query(sql, [usuarioId, vehiculoId, metodoPago, total]);
+
+        // Llamamos al endpoint
+        await axios.put('http://localhost:3003/carros/change_state', {
+            car_id: vehiculoId,
+            status: 'no_disponible'
+        });
+
+    
         const nuevaVenta = {
             id: result.insertId,
             usuarioId,
             vehiculoId,
             metodoPago,
             total,
-            fecha: new Date() // se asigna la fecha actual
+            fecha: new Date()
         };
+
         return nuevaVenta;
     } catch (error) {
-        console.error("Error al registrar venta:", error);
+        console.error("Error al registrar venta:", error.message || error);
         throw error;
     }
 }
@@ -95,11 +114,33 @@ async function obtenerVisitasPorUsuario(usuarioId) {
     }
 }
 
+async function solicitarCredito(usuarioId, vehiculoId) {
+    try {
+        // Simular respuesta de entidad financiera
+        const estado = Math.random() < 0.5 ? 'aprobado' : 'rechazado';
+
+        const sql = "INSERT INTO solicitudes_credito (usuario_id, vehiculo_id, estado) VALUES (?, ?, ?)";
+        const [result] = await connection.query(sql, [usuarioId, vehiculoId, estado]);
+
+        return {
+            id: result.insertId,
+            usuarioId,
+            vehiculoId,
+            estado,
+            fecha: new Date()
+        };
+    } catch (error) {
+        console.error("Error al solicitar crédito:", error);
+        throw error;
+    }
+}
+
 module.exports = {
     registrarVenta,
     obtenerVentas,
     obtenerVentasPorUsuario,
     programarVisita,
     obtenerVisitas,
-    obtenerVisitasPorUsuario
+    obtenerVisitasPorUsuario,
+    solicitarCredito 
 };
