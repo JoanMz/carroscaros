@@ -1,10 +1,30 @@
 const { Router, application } = require('express');
 const router = Router();
 const carrosModels = require('../models/carrosModels');
+const client = require('prom-client');
+
+const endpointCounter = new client.Counter({
+  name: 'carros_api_requests_total',
+  help: 'Conteo total de peticiones a la API de carros',
+  labelNames: ['method', 'endpoint', 'status_code'],
+});
+
+// Middleware para contar cada request
+router.use((req, res, next) => {
+  res.on('finish', () => {
+    endpointCounter.inc({
+      method: req.method,
+      endpoint: req.path,
+      status_code: res.statusCode,
+    });
+  });
+  next();
+});
 
 router.get('/carros/alive', async(req, res) =>{
     res.send({'status': 'running'});
 });
+
 
 router.post('/carros/create', async (req, res) => {
     try {
@@ -66,5 +86,13 @@ router.get("/carros/mostrar", async(req, res) =>{
     res.json(cars);
 });
 
+router.get('/metrics', async(req, res)=>{
+  try {
+    res.set('Content-Type', client.register.contentType);
+    res.end(await client.register.metrics());
+  } catch (ex) {
+    res.status(500).end(ex);
+  }
+});
 
 module.exports = router;

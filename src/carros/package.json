@@ -1,0 +1,29 @@
+{
+    "name": "carroscaros",
+    "version": "1.0.0",
+    "description": "redes project",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/JoanMz/carroscaros.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/JoanMz/carroscaros/issues"
+    },
+    "homepage": "https://github.com/JoanMz/carroscaros#readme",
+    "dependencies": {
+      "axios": "^1.8.4",
+      "cors": "^2.8.5",
+      "dotenv": "^16.4.7",
+      "express": "^4.21.2",
+      "morgan": "^1.10.0",
+      "mysql": "^2.18.1",
+      "mysql2": "^3.14.0",
+      "prom-client": "^15.1.3"
+    }
+  }
