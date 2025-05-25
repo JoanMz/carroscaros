@@ -1,0 +1,27 @@
+{
+  "name": "contratos",
+  "version": "1.0.0",
+  "description": "Microservicio para gestionar contratos",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoanMz/carroscaros.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoanMz/carroscaros/issues"
+  },
+  "homepage": "https://github.com/JoanMz/carroscaros#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.14.0",
+    "prom-client": "^15.1.3"
+  }
+}
