@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  haproxy:
+    image: haproxy:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    configs:
+      - source: haproxy_cfg
+        target: /usr/local/etc/haproxy/haproxy.cfg
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - app_net
+
+  carros:
+    build: ./src/carros
+    env_file:
+      - .env
+    ports:
+      - "3003:3003"
+    networks:
+      - app_net
+
+  comprasyvistas:
+    build: ./src/comprasyvistas
+    env_file:
+      - .env
+    ports:
+      - "3002:3002"
+    networks:
+      - app_net
+
+  usuarios:
+    build: ./src/usuarios
+    env_file:
+      - .env
+    ports:
+      - "3001:3001"
+    networks:
+      - app_net
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app_net
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app_net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports: 
+      - "5672:5672"
+      - "15672:15672"
+    env_file: 
+      - "rabbit_mq.env"
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: overlay
+
+configs:
+  haproxy_cfg:
+    file: ./haproxy/haproxy.cfg
