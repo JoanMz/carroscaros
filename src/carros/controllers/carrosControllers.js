@@ -81,10 +81,46 @@ router.get('/carros/buscar', async (req, res) => {
     }
 });
 
-router.get("/carros/mostrar", async(req, res) =>{
-    const cars = await carrosModels.getCars();
-    res.json(cars);
+router.get("/carros/mostrar", async (req, res) => {
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = parseInt(req.query.offset) || 0;
+
+    try {
+        const cars = await carrosModels.getCars(limit, offset);
+        res.json(cars);
+    } catch (error) {
+        console.error("Error al obtener vehículos:", error);
+        res.status(500).json({ error: "Error en el servidor" });
+    }
 });
+
+router.post('/carros/lote', async (req, res) => {
+    try {
+        const carros = req.body.carros;
+
+        if (!Array.isArray(carros) || carros.length === 0) {
+            return res.status(400).json({ error: "Debe enviar una lista de carros válida" });
+        }
+
+        const resultados = [];
+        for (const carro of carros) {
+            const { make, model, year, price, millage, bodyt, cilinders, transmission, fuelt, color, desc } = carro;
+
+            if (!make || !model || !year || !price || !millage || !bodyt || !cilinders || !transmission || !fuelt || !color || !desc) {
+                return res.status(400).json({ error: "Faltan campos en uno o más carros" });
+            }
+
+            const result = await carrosModels.registCar(make, model, year, price, millage, bodyt, cilinders, transmission, fuelt, color, desc);
+            resultados.push(result.insertId);
+        }
+
+        res.status(201).json({ message: "Carros registrados con éxito", ids: resultados });
+    } catch (error) {
+        console.error("Error en carga por lotes:", error);
+        res.status(500).json({ error: "Error al registrar los carros en lote" });
+    }
+});
+
 
 router.get('/metrics', async(req, res)=>{
   try {

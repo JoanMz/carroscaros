@@ -94,11 +94,12 @@ async function filterByFeatures(filters) {
     }
 }
 
-async function getCars() {
-    sql = "SELECT * FROM carroscaros.carros ORDER BY Year DESC;"
-    const [rows] = await connection.query(sql);
+async function getCars(limit = 20, offset = 0) {
+    const sql = "SELECT * FROM carroscaros.carros WHERE salestatus = 'disponible' ORDER BY Year DESC LIMIT ? OFFSET ?";
+    const [rows] = await connection.query(sql, [limit, offset]);
     return rows;
 }
+
 
 module.exports = {
     registCar, editCarSaleStatus, filterByFeatures, getCars
