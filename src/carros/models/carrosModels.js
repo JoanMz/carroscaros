@@ -33,7 +33,7 @@ async function registCar(make, model, year, price, millage, bodyt, cilinders, tr
 
 async function editCarSaleStatus(car_id, status){
     try{
-        const sql = "UPDATE carroscaros.carros SET salestatus = ? WHERE id = ?; ";
+        const sql = "UPDATE carros.carros SET salestatus = ? WHERE id = ?; ";
         const [result] = await connection.query(sql, [status, car_id]);
         
         if (result.affectedRows === 0) {
@@ -52,7 +52,7 @@ async function editCarSaleStatus(car_id, status){
 async function filterByFeatures(filters) {
     try {
         const { make, model, year, priceMin, priceMax, millageMin, millageMax } = filters;
-        let sql = "SELECT * FROM carroscaros.carros WHERE 1=1";
+        let sql = "SELECT * FROM carros.carros WHERE 1=1";
         let values = [];
 
         if (make) {
@@ -95,7 +95,7 @@ async function filterByFeatures(filters) {
 }
 
 async function getCars(limit = 20, offset = 0) {
-    const sql = "SELECT * FROM carroscaros.carros WHERE salestatus = 'disponible' ORDER BY Year DESC LIMIT ? OFFSET ?";
+    const sql = "SELECT * FROM carros.carros WHERE salestatus = 'disponible' ORDER BY Year DESC LIMIT ? OFFSET ?";
     const [rows] = await connection.query(sql, [limit, offset]);
     return rows;
 }
