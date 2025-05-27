@@ -8,6 +8,20 @@ services:
     - ./.env
     ports:
       - "3003:3003"
+  comprasyvistas:
+    build: ./src/comprasyvistas
+    env_file:
+    - ./.env
+    ports:
+      - "3002:3002"  
+  usuarios:
+    build: ./src/usuarios
+    env_file:
+    - ./.env
+    ports:
+      - "3001:3001"
+  
+
 
   prometheus:
     image: prom/prometheus
@@ -18,6 +32,8 @@ services:
       - "9090:9090"
     depends_on:
       - carros
+      - comprasyvistas
+      - usuarios
     restart: always
 
   grafana:
@@ -31,6 +47,15 @@ services:
       - prometheus
     restart: always
 
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports: 
+      - "5672:5672"
+      - "15672:15672"
+    env_file: 
+      - "rabbit_mq.env"
+    
 networks:
   carroscarosnet:
     driver: bridge

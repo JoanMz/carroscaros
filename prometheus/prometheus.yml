@@ -4,3 +4,9 @@ scrape_configs:
   - job_name: "carros_service"
     static_configs:
       - targets: ["carros:3003"]
+  - job_name: "users_service"
+    static_configs:
+      - targets: ["usuarios:3001"]
+  - job_name: "cyv_service"
+    static_configs:
+      - targets: ["comprasyvistas:3002"]
