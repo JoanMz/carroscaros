@@ -52,10 +52,20 @@
             <div id="cars-container">
                 <p id="loading-message">Cargando vehículos...</p>
             </div>
-            <!--
-              Las tarjetas de vehículos, junto con los botones "Comprar", "Agendar Visita" y
-              "Solicitar Crédito", son generadas dinámicamente desde el script.js
-            -->
+        </section>
+
+        <!-- Sección para ver contratos -->
+        <section id="contracts-section">
+            <h2>Mis Contratos</h2>
+            <input type="text" id="user-id-contracts" placeholder="ID de usuario">
+            <button onclick="verContratos()">Ver contratos</button>
+
+            <table id="contracts-table" style="margin-top: 10px; display: none;">
+                <thead>
+                    <tr><th>ID</th><th>Usuario</th><th>Carro</th><th>Fecha</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </section>
     </main>
 
@@ -64,5 +74,39 @@
     </footer>
 
     <script src="./src/scripts/script.js"></script>
+    <script>
+        // Función para consultar contratos
+        async function verContratos() {
+            const userId = document.getElementById("user-id-contracts").value;
+            if (!userId) {
+                alert("Por favor ingresa un ID de usuario");
+                return;
+            }
+
+            try {
+                const res = await fetch(`http://localhost:3005/contratos/usuario/${userId}`);
+                const data = await res.json();
+
+                const tbody = document.querySelector("#contracts-table tbody");
+                tbody.innerHTML = "";
+
+                data.forEach(c => {
+                    const row = `<tr>
+                        <td>${c.id}</td>
+                        <td>${c.usuarioId}</td>
+                        <td>${c.carroId}</td>
+                        <td>${new Date(c.fecha).toLocaleString()}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+
+                document.getElementById("contracts-table").style.display = "table";
+
+            } catch (err) {
+                console.error(err);
+                alert("Error al obtener los contratos.");
+            }
+        }
+    </script>
 </body>
 </html>

@@ -32,6 +32,18 @@ services:
     - ./.env
     ports:
       - "3001:3001"
+
+  contratos:
+    build: ./src/contratos
+    env_file:
+      - ./.env
+    ports:
+      - "3005:3005"
+    depends_on:
+      - usuarios
+      - carros
+    networks:
+      - carroscarosnet
   prometheus:
     image: prom/prometheus
     hostname: prometheus
