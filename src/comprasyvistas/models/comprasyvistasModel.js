@@ -54,7 +54,7 @@ async function registrarVenta(usuarioId, vehiculoId, metodoPago, total) {
 
 async function obtenerVentas() {
     try {
-        const [rows] = await connection.query("SELECT * FROM ventas");
+        const [rows] = await connection.query("SELECT * FROM comprasyvistas.ventas");
         return rows;
     } catch (error) {
         console.error("Error al obtener ventas:", error);
@@ -64,7 +64,7 @@ async function obtenerVentas() {
 
 async function obtenerVentasPorUsuario(usuarioId) {
     try {
-        const [rows] = await connection.query("SELECT * FROM ventas WHERE usuario_id = ?", [usuarioId]);
+        const [rows] = await connection.query("SELECT * FROM comprasyvistas.ventas WHERE usuario_id = ?", [usuarioId]);
         return rows;
     } catch (error) {
         console.error("Error al obtener ventas por usuario:", error);
@@ -79,7 +79,7 @@ async function programarVisita(usuarioId, vehiculoId, fecha) {
     // vehiculoId debe existir y el estado del vehiculo debe ser "disponible"
     // usuarioId debe existir
     try {
-        const sql = "INSERT INTO visitas (usuario_id, vehiculo_id, fecha_hora) VALUES (?, ?, ?)";
+        const sql = "INSERT INTO comprasyvistas.visitas (usuario_id, vehiculo_id, fecha_hora) VALUES (?, ?, ?)";
         const [result] = await connection.query(sql, [usuarioId, vehiculoId, fecha]);
         const nuevaVisita = {
             id: result.insertId,
@@ -96,7 +96,7 @@ async function programarVisita(usuarioId, vehiculoId, fecha) {
 
 async function obtenerVisitas() {
     try {
-        const [rows] = await connection.query("SELECT * FROM visitas");
+        const [rows] = await connection.query("SELECT * FROM comprasyvistas.visitas");
         return rows;
     } catch (error) {
         console.error("Error al obtener visitas:", error);
@@ -106,7 +106,7 @@ async function obtenerVisitas() {
 
 async function obtenerVisitasPorUsuario(usuarioId) {
     try {
-        const [rows] = await connection.query("SELECT * FROM visitas WHERE usuario_id = ?", [usuarioId]);
+        const [rows] = await connection.query("SELECT * FROM comprasyvistas.visitas WHERE usuario_id = ?", [usuarioId]);
         return rows;
     } catch (error) {
         console.error("Error al obtener visitas por usuario:", error);

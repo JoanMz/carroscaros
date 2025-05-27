@@ -38,34 +38,34 @@ async function createUser(name, email, date_birth, password){
         throw new Error("El nombre no puede estar vacío");
     }
     console.log(name, email, date_birth, password)
-    const result = await connection.query('INSERT INTO carroscaros.users(name, email, date_birth, password) VALUES(?,?,?,?)', [name, email, date_birth, password]);
+    const result = await connection.query('INSERT INTO usuarios.usuarios(name, email, date_birth, password) VALUES(?,?,?,?)', [name, email, date_birth, password]);
     return result;
 }
 
 async function getUserInfo(id_user){
-    const result = await connection.query('SELECT * FROM carroscaros.users WHERE id = ?', [id_user]);
+    const result = await connection.query('SELECT * FROM usuarios.usuarios WHERE id = ?', [id_user]);
     return result;
 }
 
 async function getUserInfoByEmail(email){
-    const result = await connection.query('SELECT * FROM carroscaros.users WHERE email = ?', [email]);
+    const result = await connection.query('SELECT * FROM usuarios.usuarios WHERE email = ?', [email]);
     return result;
 }
 
 async function getUserByEmail(email){
-    const result = await connection.query('SELECT * FROM carroscaros.users WHERE email = ?', [email]);
+    const result = await connection.query('SELECT * FROM usuarios.usuarios WHERE email = ?', [email]);
     return result;
 }
 
 async function authenticateUser(email, password){
-    const result = await connection.query('SELECT * FROM carroscaros.users WHERE email = ? AND password = ?', [email, password]);
+    const result = await connection.query('SELECT * FROM usuarios.usuarios WHERE email = ? AND password = ?', [email, password]);
     return result;
 }
 
 async function editUser(updates){
     try{
         const { name, email, date_birth, password, role } = updates;
-        let sql = "UPDATE carroscaros.users SET";
+        let sql = "UPDATE usuarios.usuarios SET";
         let values = [];
         if (!email){
             throw new Error("El email es obligatorio");
@@ -101,9 +101,9 @@ async function editUser(updates){
     }
 }
 
-async function getAllUsers(){
+async function getAllusuarios(){
     try {
-        const sql = "SELECT * FROM carroscaros.users";
+        const sql = "SELECT * FROM usuarios.usuarios";
         const [result] = await connection.query(sql);
         return result;
     } catch (error) {
@@ -113,5 +113,5 @@ async function getAllUsers(){
 }    
 
 module.exports = {
-    createUser, getUserInfo, getUserByEmail, authenticateUser, editUser, getAllUsers, getUserInfoByEmail
+    createUser, getUserInfo, getUserByEmail, authenticateUser, editUser, getAllusuarios, getUserInfoByEmail
 };
