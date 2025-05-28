@@ -14,35 +14,42 @@ services:
       placement:
         constraints: [node.role == manager]
     networks:
-      - app_net
+      app_net:
+        aliases: 
+          - haproxy
 
   carros:
-    build: ./src/carros
+    image: joandatabrick/carros-service:latest
     env_file:
       - .env
     ports:
       - "3003:3003"
     networks:
-      - app_net
+      app_net:
+        aliases:
+          - "carros"
 
   comprasyvistas:
-    build: ./src/comprasyvistas
+    image: joandatabrick/comprasyvistas-service:latest
     env_file:
       - .env
     ports:
       - "3002:3002"
     networks:
-      - app_net
+      app_net:
+        aliases:
+          - comprasyvistas
 
   usuarios:
-    build: ./src/usuarios
+    image: joandatabrick/usuarios-service:latest
     env_file:
       - .env
     ports:
       - "3001:3001"
     networks:
-      - app_net
-
+      app_net:
+        aliases:
+          - usuarios
   prometheus:
     image: prom/prometheus
     ports:
@@ -53,7 +60,9 @@ services:
       restart_policy:
         condition: on-failure
     networks:
-      - app_net
+      app_net:
+        aliases:
+          - prometheus
 
   grafana:
     image: grafana/grafana:latest
@@ -65,7 +74,9 @@ services:
       restart_policy:
         condition: on-failure
     networks:
-      - app_net
+      app_net:
+        aliases:
+          - grafana
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -75,11 +86,20 @@ services:
     env_file: 
       - "rabbit_mq.env"
     networks:
-      - app_net
-
+      app_net:
+        aliases:
+          - rabbitmq
+  web:
+    image: auto-mundo-usado-carroscaros_frontend:v2
+    ports:
+      - "8080:8080"
+    networks:
+      app_net:
+        aliases:
+          - web
 networks:
   app_net:
-    driver: overlay
+    external: true
 
 configs:
   haproxy_cfg:
